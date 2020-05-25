@@ -23,6 +23,7 @@
     <ProjectGuid>{0A601460-21F7-4E6B-B652-F5319D53AF4C}</ProjectGuid>
     <RootNamespace>FlappyAdam</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Flying Bird</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -146,12 +147,14 @@
   <ItemGroup>
     <ClCompile Include="Bird.cpp" />
     <ClCompile Include="Cloud.cpp" />
+    <ClCompile Include="InOut.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Pipe.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bird.h" />
     <ClInclude Include="Cloud.h" />
+    <ClInclude Include="InOut.h" />
     <ClInclude Include="Pipe.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

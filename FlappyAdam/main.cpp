@@ -1,17 +1,17 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <string>
-#include <fstream>
 #include <random>
 #include "Bird.h"
 #include "Pipe.h"
 #include "Cloud.h"
+#include "InOut.h"
 #include <iostream>
 using namespace std;
 using namespace sf;
 
 //SETTINGS AND GLOBAL VARIABLES
-string gameTitle{ "FlappyAdam" };
+string gameTitle{ "Flying Bird" };
 string directory{ };
 unsigned int resX = 1280;
 unsigned int resY = 720;
@@ -23,6 +23,7 @@ bool configure = 0;
 
 Event event;
 Color background(173, 216, 230, 255);
+InOut file;
 default_random_engine generator;
 
 
@@ -31,8 +32,6 @@ template <class type1, class type2> bool isInteract(type1& object1, type2& objec
 template <class type1> bool outOfScreen(type1& object);
 template<class type1> bool settingValue(type1& variable);
 bool mouse(Text text, const Window& window);
-bool loadConfig();
-bool saveConfig();
 bool load(string fileToLoad);
 bool loadDirectory();
 bool pointsToFile(unsigned int point);
@@ -47,8 +46,10 @@ int main()
 		system("cls");
 		if (!loadDirectory())
 			cout << "Unable to load custom directory from localDirectory.txt" << endl;
-		if (!loadConfig())
-			saveConfig();
+		else
+			file.setSettingName(directory);
+		if (!file.loadConfig())
+			file.saveConfig();
 		else
 			loadingFailure = 0;
 		load("PNG/cloud1.png");
@@ -90,6 +91,8 @@ int main()
 		Pipe pipe1up(resX, 0.15 * resY, 1);
 		Pipe pipe2(1.5 * resX, resY + random, 0);
 		Pipe pipe2up(1.5 * resX, 0.15 * resY + random, 1);
+		pipe2.move();
+		pipe2up.move();
 		Cloud cloud[numberOfClouds];
 		for (int i{}; i < numberOfClouds; i++)
 		{
@@ -97,8 +100,7 @@ int main()
 			cloud[i].restart(cloudDistributionWidth(generator), cloudDistributionHeight(generator), n);
 		}
 		
-		pipe2.move();
-		pipe2up.move();
+
 		RenderWindow game;
 
 
@@ -299,7 +301,7 @@ int main()
 			}
 			game.display();
 		}
-		if (configure)
+		if (configure) //setting options
 		{
 			if (points > bestResult)
 			{
@@ -336,13 +338,13 @@ int main()
 					break;
 			}
 			configure = 0;
-			saveConfig();
+			file.saveConfig();
 		}
 		else
 			return(0);
 	}
 }
-
+//DEFINITIONS
 template <class type1, class type2> bool isInteract(type1& object1, type2& object2)
 {
 	return (object1.right() >= object2.left() && object1.left() <= object2.right() &&
@@ -400,60 +402,6 @@ bool mouse(Text text, const Window& window)
 		(text.getPosition().y) + 2 * text.getOrigin().y >= Mouse::getPosition(window).y);
 }
 
-bool loadConfig()
-{
-	string settingName{ directory + "config.txt" };
-	ifstream read(settingName);
-	if (!read.is_open())
-	{
-		cout << "Cannot open " << settingName << endl;
-		loadingFailure = 1;
-		return false;
-	}
-	else
-	{
-		read.seekg(28);
-		read >> settingName;
-		read >> resX;
-		read >> settingName;
-		read >> resY;
-		read >> settingName;
-		read >> fullScreen;
-		read >> settingName;
-		read >> Vsync;
-	}
-	read.close();
-	return true;
-}
-
-bool saveConfig()
-{
-	string settingName{ directory + "config.txt" };
-	ofstream write;
-	write.open(settingName, ios::trunc);
-	write.close();
-	write.open(settingName, ios::app);
-	if (!write.is_open())
-	{
-		cout << "Cannot save configuration to " << settingName << endl;
-		write.close();
-		return false;
-	}
-	else
-	{
-		write << "example:" << endl << "settingName= value" << endl << "ResolutionWidth= ";
-		write << resX << endl;
-		write << "ResolutionHeight= ";
-		write << resY << endl;
-		write << "FullScreen= ";
-		write << fullScreen << endl;
-		write << "VerticalSync= ";
-		write << Vsync;
-	}
-	write.close();
-	return true;
-}
-
 bool load(string fileToLoad)
 {
 	string settingName{ directory + fileToLoad };
@@ -474,7 +422,7 @@ bool loadDirectory()
 	ifstream read{ "localDirectory.txt" };
 	if (read.is_open())
 	{
-		read >> directory;
+		getline(read, directory);
 		read.close();
 		return true;
 	}
