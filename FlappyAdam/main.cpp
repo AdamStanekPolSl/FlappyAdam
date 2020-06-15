@@ -1,17 +1,17 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <string>
-#include <random>
-#include "Bird.h"
-#include "Pipe.h"
-#include "Cloud.h"
-#include "InOut.h"
-#include <iostream>
-using namespace std;
-using namespace sf;
+#include <random>						//////////////////////////////////////////////////
+#include "Bird.h"						//YOU CAN CHECK THE LATEST VERSION ON MY GITHUB	//
+#include "Pipe.h"						//https://github.com/AdamStanekPolSl/FlappyAdam	//
+#include "Cloud.h"						//////////////////////////////////////////////////
+#include "InOut.h"						//Running this project require SFML for C++,	//
+#include <iostream>						//visit SFML page to learn more about this lib	//
+using namespace std;					//https://www.sfml-dev.org/tutorials/2.5/		//
+using namespace sf;						//////////////////////////////////////////////////
 
 //SETTINGS AND GLOBAL VARIABLES
-string gameTitle{ "Flying Bird" };
+string gameTitle{ "FlappyAdam" };
 string directory{ };
 unsigned int resX = 1280;
 unsigned int resY = 720;
@@ -19,7 +19,7 @@ unsigned int fpsLimit = 60;
 bool fullScreen = 0;
 bool Vsync = 1;
 bool loadingFailure = 0;
-bool configure = 0;
+bool configure = 0;//true opens console where you can change game options
 
 Event event;
 Color background(173, 216, 230, 255);
@@ -28,31 +28,31 @@ default_random_engine generator;
 
 
 //TEMPLATES AND FUNCTIONS
-template <class type1, class type2> bool isInteract(type1& object1, type2& object2);
-template <class type1> bool outOfScreen(type1& object);
-template<class type1> bool settingValue(type1& variable);
-bool mouse(Text text, const Window& window);
-bool load(string fileToLoad);
-bool loadDirectory();
-bool pointsToFile(unsigned int point);
-unsigned int pointsFromFile(unsigned int point);
+template <class type1, class type2> bool isInteract(type1& object1, type2& object2);//collision = true
+template <class type1> bool outOfScreen(type1& object);//out of screen (left side) = true
+template<class type1> bool settingValue(type1& variable);//true = success with setting new Value
+bool mouse(Text text, const Window& window);//true = text and mouse collision
+bool load(string fileToLoad);//testing loading game files, true = ok
+bool loadDirectory();//load custom default path, false = localDirectory.txt not found
+bool pointsToFile(unsigned int point);//saves personal best, true = success
+unsigned int pointsFromFile(unsigned int point);//loads personal best, returns points
 
 
 
 int main()
 {
-	while (true)
+	while (true)//whole game
 	{
 		system("cls");
 		if (!loadDirectory())
-			cout << "Unable to load custom directory from localDirectory.txt" << endl;
+			cout << "Unable to load custom directory from localDirectory.txt" << endl;		//CONSOLE COMMANDS WHILE LOADING
 		else
 			file.setSettingName(directory);
 		if (!file.loadConfig())
 			file.saveConfig();
 		else
 			loadingFailure = 0;
-		load("PNG/cloud1.png");
+		load("PNG/cloud1.png");//testing load functions
 		load("PNG/pipe.png");
 		load("PNG/bird.png");
 		load("FONTS/prototype.ttf");
@@ -71,7 +71,7 @@ int main()
 		}
 
 		uniform_real_distribution<float> pipeDistribution(0, 0.29 * resY);//random pipe height
-		uniform_int_distribution<int> cloudDistributionWidth(0, resX);
+		uniform_int_distribution<int> cloudDistributionWidth(0, resX);//random clouds position
 		uniform_int_distribution<int> cloudDistributionHeight(0, resY);
 
 		bool pause{ 1 };
@@ -80,24 +80,24 @@ int main()
 		unsigned int points{};
 		unsigned int bestResult{};
 		unsigned int fontSize{ static_cast<unsigned int>(resY) };
-		const unsigned int numberOfClouds{ 10 };
+		const unsigned int numberOfClouds{ 10 };//stores how many clouds you want in game
 
 		Vector2u resolution{ resX,resY };
-		Clock pointsClock;
+		Clock pointsClock;//points counter
 		Font prototype;
 		Text score, play, exit, bestScore, set, setInfo;
 		Bird bird;
-		Pipe pipe1(resX, resY, 0);
+		Pipe pipe1(resX, resY, 0);//initializing pipes
 		Pipe pipe1up(resX, 0.15 * resY, 1);
 		Pipe pipe2(1.5 * resX, resY + random, 0);
 		Pipe pipe2up(1.5 * resX, 0.15 * resY + random, 1);
-		pipe2.move();
+		pipe2.move();//moveng 2. pipes to correct position
 		pipe2up.move();
 		Cloud cloud[numberOfClouds];
 		for (int i{}; i < numberOfClouds; i++)
 		{
 			int n = i % 3 + 1;
-			cloud[i].restart(cloudDistributionWidth(generator), cloudDistributionHeight(generator), n);
+			cloud[i].restart(cloudDistributionWidth(generator), cloudDistributionHeight(generator), n);//loading different positions and textures
 		}
 		
 
@@ -110,19 +110,19 @@ int main()
 			return EXIT_FAILURE;
 		}
 
-		score.setFillColor(Color::Red);
+		score.setFillColor(Color::Red);//setting for score text
 		score.setFont(prototype);
 		score.setCharacterSize(fontSize * 0.08f);
 		score.setPosition(resX/2.f, 0.1*resY);
 
 
-		bestScore.setFillColor(Color::Red);
+		bestScore.setFillColor(Color::Red);//for personal best
 		bestScore.setFont(prototype);
 		bestScore.setCharacterSize(fontSize * 0.10f);
 		bestScore.setPosition(resX / 2.f, 0);
 
 
-		play.setString("PLAY");
+		play.setString("PLAY");//menu
 		play.setFont(prototype);
 		play.setCharacterSize(fontSize * 0.12f);
 		play.setOrigin(play.getGlobalBounds().width / 2.f, play.getGlobalBounds().height / 2);
@@ -136,7 +136,7 @@ int main()
 		set.setPosition(resX / 2.f, resY / 2);
 		set.setFillColor(Color::Black);
 
-		setInfo.setFont(prototype);
+		setInfo.setFont(prototype);//this text explains function of menu(for example "press spacebar to fly")
 		setInfo.setCharacterSize(fontSize * 0.08f);
 		setInfo.setPosition(resX/2.f, 0.9*resY);
 		setInfo.setFillColor(Color::Black);
@@ -149,7 +149,7 @@ int main()
 		exit.setFillColor(Color::Black);
 
 		if (fullScreen)
-			game.create(VideoMode(resX, resY, 32), gameTitle, Style::Fullscreen);
+			game.create(VideoMode(resX, resY, 32), gameTitle, Style::Fullscreen);//recreating window with parameters
 		else
 			game.create(VideoMode(resX, resY, 32), gameTitle);
 
@@ -157,19 +157,19 @@ int main()
 		game.setVerticalSyncEnabled(Vsync);
 
 		Cursor cursor;
-		if (cursor.loadFromSystem(Cursor::Hand))
+		if (cursor.loadFromSystem(Cursor::Hand))//setting mouuse to default hand cursor
 			game.setMouseCursor(cursor);
 
 
 		while (game.isOpen())//game loop
 		{
-			game.setSize(resolution);
+			game.setSize(resolution);//prevents changing window size
 			game.clear(background);
 			game.pollEvent(event);
 			for (int i{}; i < numberOfClouds; i++)
 			{
 				if (outOfScreen(cloud[i]))
-					cloud[i].restart(resX, cloudDistributionHeight(generator),(i%3)+1);
+					cloud[i].restart(resX, cloudDistributionHeight(generator),(i%3)+1);//move cloud to new starting position after it goes out of the window (left side)
 				game.draw(cloud[i]);
 			}
 
@@ -178,7 +178,7 @@ int main()
 			if (event.type == Event::KeyPressed)//pause event
 				if (event.key.code == Keyboard::Escape && !pause)
 					pause = 1;
-			if (!pause)//non pause instructions
+			if (!pause)//non pause instructions(GAME)
 			{
 				for (int i{};i<numberOfClouds;i++)
 					cloud[i].update();
@@ -187,14 +187,14 @@ int main()
 				if (outOfScreen(pipe1))
 				{
 					pipe1.restart(resX, resY + random);
-					pipe1up.restart(resX, 0.15 * resY + random);
+					pipe1up.restart(resX, 0.15 * resY + random);//moving pipes after they go out of the left side of window
 				}
 				if (outOfScreen(pipe2))
 				{
 					pipe2.restart(resX, resY + random);
 					pipe2up.restart(resX, 0.15 * resY + random);
 				}
-				if (pointsClock.getElapsedTime().asMilliseconds() >= 100.f)
+				if (pointsClock.getElapsedTime().asMilliseconds() >= 100.f)//add 1 point every 100 miliseconds
 				{
 					points++;
 					pointsClock.restart();
@@ -205,30 +205,30 @@ int main()
 				pipe2up.update();
 				bird.update();
 			}
-			else if (gameOver)
+			else if (gameOver)// if fail
 			{
 				bird.restart();
 				gameOver = 0;
 			}
 			score.setString("THIS RUN: "+to_string(points));
-			score.setOrigin(score.getGlobalBounds().width/2.f, 0);
+			score.setOrigin(score.getGlobalBounds().width/2.f, 0);//updating score string
 			game.draw(bird);
 			game.draw(pipe1);
 			game.draw(pipe1up);
 			game.draw(pipe2);
 			game.draw(pipe2up);
 			game.draw(score);
-			if (bestResult)
+			if (bestResult)//draw best score if any
 			{
 				bestScore.setString("BEST: " + to_string(bestResult));
 				bestScore.setOrigin(bestScore.getGlobalBounds().width / 2.f, 0);
 				game.draw(bestScore);
 			}
-			if (pause)
+			if (pause)//pause menu
 			{
 				bestResult = pointsFromFile(bestResult);
 				game.setMouseCursorVisible(true);
-				if (mouse(play, game))
+				if (mouse(play, game))//intersecting of mouse and "play" text
 				{
 					play.setFillColor(Color::Red);
 					if (Mouse::isButtonPressed(Mouse::Left))
@@ -276,7 +276,7 @@ int main()
 				game.draw(play);
 				game.draw(exit);
 			}
-			else if (bird.screenCollision() || isInteract(bird, pipe1) || isInteract(bird, pipe1up) ||
+			else if (bird.screenCollision() || isInteract(bird, pipe1) || isInteract(bird, pipe1up) ||//true when you hit pipe or screen frame
 				isInteract(bird, pipe2) || isInteract(bird, pipe2up))
 			{
 				pause = 1;
@@ -287,7 +287,7 @@ int main()
 					if (!pointsToFile(bestResult))
 						cout << "Unable to save personalBest.txt" << endl;
 				}
-				points = 0;
+				points = 0;//restarts game
 				pipe1.restart(resX, resY + random);
 				pipe1up.restart(resX, 0.15 * resY + random);
 				pipe2.restart(1.5 * resX, resY + random);
@@ -309,7 +309,7 @@ int main()
 				if (!pointsToFile(bestResult))
 					cout << "Unable to save personalBest.txt" << endl;
 			}
-			while (true)
+			while (true)//repeats if you try to set wrong value
 			{
 				system("cls");
 				cout << "---SETTINGS---" << endl
@@ -319,7 +319,7 @@ int main()
 					break;
 			}
 			resX = resY * 16 / 9;
-			while (true)
+			while (true)//repeats if you try to set wrong value
 			{
 				system("cls");
 				cout << "---SETTINGS---" << endl
@@ -328,7 +328,7 @@ int main()
 				if (settingValue(fullScreen))
 					break;
 			}
-			while (true)
+			while (true)//repeats if you try to set wrong value
 			{
 				system("cls");
 				cout << "---SETTINGS---" << endl
@@ -338,7 +338,7 @@ int main()
 					break;
 			}
 			configure = 0;
-			file.saveConfig();
+			file.saveConfig();//saving configuration
 		}
 		else
 			return(0);

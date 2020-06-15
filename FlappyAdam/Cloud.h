@@ -15,12 +15,12 @@ public:
 	Cloud(float x = resX, float y = resY, int textureNumber=1);
 	~Cloud() = default;
 
-	void update();
-	void restart(float x = resX, float y = resY, int textureNumber=1);
+	void update();//include move() function
+	void restart(float x = resX, float y = resY, int textureNumber=1);//moves cloud to new starting position
 
-	float right();
+	float right();//returns right side of cloud
 
-	void move();
+	void move();//moves cloud
 private:
 	float scaleX;
 	float scaleY;
@@ -29,6 +29,6 @@ private:
 	Texture texture;
 	Sprite sprite;
 	Vector2f startVelocity{};
-	void draw(RenderTarget & target, RenderStates state) const override;
+	void draw(RenderTarget & target, RenderStates state) const override;//draws object in render target (window)
 };
 
